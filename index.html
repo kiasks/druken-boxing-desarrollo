@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Drunken Boxing | Edge Edition</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <link rel="stylesheet" href="style.css"/>
+
+        <script>
+            // PARCHE PARA EDGE: Engañamos al motor para que no pida archivos por 'fetch'
+            window.C3_IsLocal = true;
+
+            // Evitamos el error de 'Worker' que bloquea Edge en local
+            window.Worker = function() {
+                return {
+                    postMessage: function() {},
+                    terminate: function() {},
+                    addEventListener: function() {},
+                    removeEventListener: function() {}
+                };
+            };
+
+            // Reparador de JSON automático (para no tocar tu data.json)
+            const originalParse = JSON.parse;
+            JSON.parse = function(text) {
+                try {
+                    return originalParse(text);
+                } catch (e) {
+                    console.warn("Reparando JSON en Edge...");
+                    let clean = text.trim().replace(/^[^{\[]+/, '').replace(/[}\]]+$/, '}');
+                    return originalParse(clean);
+                }
+            };
+        </script>
+
+        <style>
+            canvas + div, [title*="More Games"] { display: none !important; }
+            body { background: #000; margin: 0; overflow: hidden; }
+        </style>
+    </head>
+    <body>
+        <script src="box2d.wasm.js"></script>
+        <script src="scripts/c3runtime.js"></script> 
+        <script src="scripts/supportcheck.js"></script>
+        <script src="scripts/offlineclient.js"></script>
+        <script src="scripts/main.js"></script>
+    </body>
+</html>
